@@ -9,16 +9,12 @@ const register = async (req, res) => {
   /*  #swagger.tags = ["Auth"] */
 
   try {
-    const { password } = req.body;
-
-    const hash = await bcrypt.hash(password, 8);
-    await User.create({
+    const user = await User.create({
       ...req.body,
-      password: hash,
     });
 
     return res.status(200).json({
-      message: "Registered successfuly",
+      message: user,
     });
   } catch (error) {
     getError(error, res);
@@ -45,11 +41,7 @@ const login = async (req, res) => {
 
     if (!user) throw new Error("User Not Registered");
 
-    const isAuthenticated = await bcrypt.compare(password, user.password);
-    if (!isAuthenticated) throw new Error("Incorrect Password");
-
-    if (isAuthenticated) return res.status(200).json(user);
-    else return res.status(400).json({ error: "Invalid Credentials" });
+    return res.status(200).json(user);
   } catch (error) {
     getError(error, res);
   }
