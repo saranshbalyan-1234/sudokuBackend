@@ -9,19 +9,17 @@ const register = async (req, res) => {
   /*  #swagger.tags = ["Auth"] */
 
   try {
-
     const { password } = req.body;
 
     const hash = await bcrypt.hash(password, 8);
     await User.create({
       ...req.body,
       password: hash,
-    })
+    });
 
     return res.status(200).json({
       message: "Registered successfuly",
-    })
-
+    });
   } catch (error) {
     getError(error, res);
   }
@@ -29,10 +27,9 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   /*  #swagger.tags = ["Auth"] */
   try {
-
     const { email, password } = req.body;
 
-    const user = await User.schema(tenant).findOne({
+    const user = await User.findOne({
       where: { email },
       include: [
         {
@@ -51,18 +48,11 @@ const login = async (req, res) => {
     const isAuthenticated = await bcrypt.compare(password, user.password);
     if (!isAuthenticated) throw new Error("Incorrect Password");
 
-    if (isAuthenticated) return res.status(200).json(user)
-    else return res.status(400).json({ error: "Invalid Credentials" })
-
+    if (isAuthenticated) return res.status(200).json(user);
+    else return res.status(400).json({ error: "Invalid Credentials" });
   } catch (error) {
     getError(error, res);
   }
 };
 
-
-
-
-export {
-  login,
-  register,
-};
+export { login, register };
